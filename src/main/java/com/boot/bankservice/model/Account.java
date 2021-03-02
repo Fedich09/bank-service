@@ -1,5 +1,6 @@
 package com.boot.bankservice.model;
 
+import java.math.BigDecimal;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -7,7 +8,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 import lombok.Data;
 import lombok.ToString;
 
@@ -22,11 +23,9 @@ public class Account {
     private String accountNumber;
     @Enumerated(EnumType.STRING)
     private Currency currency;
-    private Double balance;
+    private BigDecimal balance;
     @Column(name = "is_active")
     private Boolean isActive;
-    @OneToOne
+    @ManyToOne
     private User user;
-
-
 }
