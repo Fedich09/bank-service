@@ -9,6 +9,7 @@ import com.boot.bankservice.service.TransactionService;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import javax.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +22,7 @@ public class TransactionServiceImpl implements TransactionService {
     private final TransactionRepository transactionRepository;
     private final AccountService accountService;
 
+    @Transactional
     @Override
     public void completeTransaction(String accountNumberFrom,
                                     String accountNumberTo, Double amount) {
@@ -37,7 +39,7 @@ public class TransactionServiceImpl implements TransactionService {
             throw new DataProcessingException("Balance can't be less than 0 ");
         }
         transactionRepository.save(outcome);
-        accountService.save(accountFrom);
+        accountService.update(accountFrom);
         Transaction income = new Transaction();
         income.setAccountFrom(accountFrom);
         income.setAccountTo(accountTo);
@@ -46,7 +48,7 @@ public class TransactionServiceImpl implements TransactionService {
         income.setType(Transaction.Type.INCOMING);
         transactionRepository.save(income);
         accountTo.setBalance(accountTo.getBalance().add(income.getAmount()));
-        accountService.save(accountTo);
+        accountService.update(accountTo);
     }
 
     @Override
