@@ -22,8 +22,8 @@ public class TransactionServiceImpl implements TransactionService {
     private final AccountService accountService;
 
     @Override
-    public Transaction completeTransaction(String accountNumberFrom,
-                                           String accountNumberTo, Double amount) {
+    public void completeTransaction(String accountNumberFrom,
+                                    String accountNumberTo, Double amount) {
         Account accountFrom = accountService.getByAccountNumber(accountNumberFrom);
         Account accountTo = accountService.getByAccountNumber(accountNumberTo);
         Transaction outcome = new Transaction();
@@ -37,7 +37,7 @@ public class TransactionServiceImpl implements TransactionService {
             throw new DataProcessingException("Balance can't be less than 0 ");
         }
         transactionRepository.save(outcome);
-        accountService.add(accountFrom);
+        accountService.save(accountFrom);
         Transaction income = new Transaction();
         income.setAccountFrom(accountFrom);
         income.setAccountTo(accountTo);
@@ -46,8 +46,7 @@ public class TransactionServiceImpl implements TransactionService {
         income.setType(Transaction.Type.INCOMING);
         transactionRepository.save(income);
         accountTo.setBalance(accountTo.getBalance().add(income.getAmount()));
-        accountService.add(accountTo);
-        return null;
+        accountService.save(accountTo);
     }
 
     @Override
